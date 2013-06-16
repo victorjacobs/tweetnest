@@ -12,6 +12,7 @@
 	header("Content-Type: text/html; charset=utf-8");
 	
 	require "inc/config.php";
+    require "inc/class.db.php";
 	
 	$GLOBALS['error'] = false;
 	
@@ -83,8 +84,10 @@
 	clearstatcache();
 	if(!is_writable("inc/config.php")){ $e[] = "Your <code>config.php</code> file is not writable by the server. Please make sure it is before proceeding, then reload this page. Often, this is done through giving every system user the write privileges on that file through FTP."; }
 	if(!function_exists("preg_match")){ $e[] = "PHP&#8217;s PCRE support module appears to be missing. Tweet Nest requires Perl-style regular expression support to function."; }
-	if(!function_exists("mysql_connect") && !function_exists("mysqli_connect")){ $e[] = "Neither the MySQL nor the MySQLi library for PHP is installed. One of these are required, along with a MySQL server to connect to and store data in."; }
-	
+	//if(!function_exists("mysql_connect") && !function_exists("mysqli_connect")){ $e[] = "Neither the MySQL nor the MySQLi library for PHP is installed. One of these are required, along with a MySQL server to connect to and store data in."; }
+    if (count(DB::checkDatabaseAvailability()) == 0)
+        $e[] = "No supported database library installed. Install either PostgreSQL or MySQL libraries for PHP to continue.";    // TODO error message
+
 	// PREPARE VARIABLES
 	$pp   = strpos($_SERVER['REQUEST_URI'], "/setup");
 	$path = is_numeric($pp) ? ($pp > 0 ? substr($_SERVER['REQUEST_URI'], 0, $pp) : "/") : "";
@@ -117,10 +120,9 @@
 			$sPath = "/" . trim($_POST['path'], "/");
 			$log[] = "Formatted path: " . $sPath;
 			if(!$e){
-				// Check the database first!
-				require "inc/class.db.php";
 				try {
-					$db = new DB("mysql", array(
+					$db = DB::openConnection(array(
+                        "engine"   => $_POST['db_engine'],
 						"hostname" => $_POST['db_hostname'],
 						"username" => $_POST['db_username'],
 						"password" => $_POST['db_password'],
@@ -133,18 +135,19 @@
 					$e[] = "Got the following database connection error! <code>" . $db->error() . "</code> Please make sure that your database settings are correct and that the database server is running and then try again.";
 				}
 				if(!$e && !$GLOBALS['error']){ // If we get a database error, it'll activate $GLOBALS['error'] through PHP error
-					$log[] = "Connected to MySQL database!";
-					$cv    = $db->clientVersion();
-					if(version_compare($cv, "4.1.0", "<")){
-						$e[] = "Your MySQL client version is too old. Tweet Nest requires MySQL version 4.1 or higher to function. Your client currently has " . s($cv) . ".";
-					} else { $log[] = "MySQL client version: " . $cv; }
-					$sv    = $db->serverVersion();
-					if(version_compare($sv, "4.1.0", "<")){
-						$e[] = "Your MySQL server version is too old. Tweet Nest requires MySQL version 4.1 or higher to function. Your server currently has " . s($sv) . ".";
-					} else { $log[] = "MySQL server version: " . $sv; }
+                    // TODO: version errors for other database types
+//					$log[] = "Connected to MySQL database!";
+//					$cv    = $db->clientVersion();
+//					if(version_compare($cv, "4.1.0", "<")){
+//						$e[] = "Your MySQL client version is too old. Tweet Nest requires MySQL version 4.1 or higher to function. Your client currently has " . s($cv) . ".";
+//					} else { $log[] = "MySQL client version: " . $cv; }
+//					$sv    = $db->serverVersion();
+//					if(version_compare($sv, "4.1.0", "<")){
+//						$e[] = "Your MySQL server version is too old. Tweet Nest requires MySQL version 4.1 or higher to function. Your server currently has " . s($sv) . ".";
+//					} else { $log[] = "MySQL server version: " . $sv; }
 					if(!$e){
 						// Set up the database!
-						$log[] = "Acceptable MySQL version.";
+						//$log[] = "Acceptable MySQL version.";
 						$DTP = $_POST['db_table_prefix']; // This has been verified earlier on in the code
 						
 						// Tweets table
@@ -585,8 +588,20 @@ INSTALL LOG: <?php var_dump($log); ?>
 				<div class="field required"><input type="text" class="text" name="path" id="path" value="<?php echo $_POST['path'] ? s($_POST['path']) : s($path); ?>" /></div>
 				<div class="what">The folder in which you have installed Tweet Nest, i.e. the part after your domain name. If on the root of the domain, simply type <strong>/</strong>. <span class="address">Example: <strong>/tweets</strong></span> for <span class="address">http://pongsocket.com<strong>/tweets</strong></span> (Note: No end slash, please!)</div>
 			</div>
-			
+
 			<h2>Database authentication</h2>
+            <div class="input">
+                <label for="db_engine">Database type</label>
+                <div class="field required">
+                    <select name="db_engine" id="db_engine">
+                    <?php
+                    foreach (DB::checkDatabaseAvailability() as $engine) {
+                        echo "<option value=\"$engine\">$engine</option>";
+                    }
+                    ?>
+                    </select></div>
+                <div class="what">The type of database server.</div>
+            </div>
 			<div class="input">
 				<label for="db_hostname">Database host name</label>
 				<div class="field required"><input type="text" class="text" name="db_hostname" id="db_hostname" value="<?php echo $_POST['db_hostname'] ? s($_POST['db_hostname']) : "localhost"; ?>" /></div>

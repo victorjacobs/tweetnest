@@ -12,6 +12,7 @@
 		'path'               => '', // Where's your twitter installation on your domain? No end slash, please.
 		// Database values
 		'db'                 => array(
+            'engine'         => '',
 			'hostname'       => '', // The hostname of your database server. Usually 'localhost'
 			'username'       => '', // The username to log in to your database
 			'password'       => '', // The password to log in to your database
