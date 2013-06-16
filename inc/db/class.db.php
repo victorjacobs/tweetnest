@@ -31,7 +31,7 @@
                     break;
 
                 case "postgres":
-
+                    return new PostgresDriver($args);
                     break;
 
                 default:

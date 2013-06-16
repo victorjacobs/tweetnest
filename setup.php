@@ -12,7 +12,7 @@
 	header("Content-Type: text/html; charset=utf-8");
 	
 	require "inc/config.php";
-    require "inc/class.db.php";
+    require "inc/db/class.db.php";
 	
 	$GLOBALS['error'] = false;
 	
@@ -180,6 +180,7 @@
 							$cf = configSetting($cf, "twitter_screenname", $_POST['twitter_screenname']);
 							$cf = configSetting($cf, "timezone", $_POST['tz']);
 							$cf = configSetting($cf, "path", $sPath);
+                            $cf = configSetting($cf, "engine", $_POST["db_engine"]);
 							$cf = configSetting($cf, "hostname", $_POST['db_hostname']);
 							$cf = configSetting($cf, "username", $_POST['db_username']);
 							$cf = configSetting($cf, "password", $_POST['db_password']);

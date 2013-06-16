@@ -25,8 +25,9 @@
 	include "smartypants.php";
 	
 	// DB
-	require "class.db.php";
-	$db = new DB("mysql", $config['db']);
+	require "db/class.db.php";
+    $db = DB::openConnection($config['db']);
+	//$db = new DB("mysql", $config['db']);
 	if(!$delayedDB){ unset($config['db']['password']); }
 	
 	// Twitter API class

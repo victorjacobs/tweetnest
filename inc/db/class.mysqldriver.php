@@ -6,6 +6,9 @@
  * Time: 18:49
  * To change this template use File | Settings | File Templates.
  */
+
+require_once "interface.genericdriver.php";
+
 class MySQLDriver implements IGenericDriver
 {
     public  $res    = null;
