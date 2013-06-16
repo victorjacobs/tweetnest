@@ -151,25 +151,25 @@
 						$DTP = $_POST['db_table_prefix']; // This has been verified earlier on in the code
 						
 						// Tweets table
-						$q = $db->query("CREATE TABLE `".$DTP."tweets` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `userid` bigint(20) unsigned NOT NULL, `tweetid` varchar(100) NOT NULL, `type` tinyint(4) NOT NULL DEFAULT '0', `time` int(10) unsigned NOT NULL, `text` varchar(255) NOT NULL, `source` varchar(255) NOT NULL, `favorite` tinyint(4) NOT NULL DEFAULT '0', `extra` text NOT NULL, `coordinates` text NOT NULL, `geo` text NOT NULL, `place` text NOT NULL, `contributors` text NOT NULL, PRIMARY KEY (`id`), FULLTEXT KEY `text` (`text`)) ENGINE=MyISAM  DEFAULT CHARSET=utf8");
+						$q = $db->query("CREATE TABLE ".$DTP."tweets (id SERIAL NOT NULL, userid bigint NOT NULL, tweetid varchar(100) NOT NULL, type smallint NOT NULL DEFAULT '0', time integer NOT NULL, text varchar(255) NOT NULL, source varchar(255) NOT NULL, favorite smallint NOT NULL DEFAULT '0', extra text NOT NULL, coordinates text NOT NULL, geo text NOT NULL, place text NOT NULL, contributors text NOT NULL, PRIMARY KEY (id))");
 						if(!$q){
 							$e[] = "An error occured while creating table <code>".$DTP."tweets</code>: <code>" . $db->error() . "</code>";
 						} else { $log[] = "Successfully created table ".$DTP."tweets"; }
 						
 						// Tweet users table
-						$q = $db->query("CREATE TABLE `".$DTP."tweetusers` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `userid` bigint(20) unsigned NOT NULL, `screenname` varchar(25) NOT NULL, `realname` varchar(255) NOT NULL, `location` varchar(255) NOT NULL, `description` varchar(255) NOT NULL, `profileimage` varchar(255) NOT NULL, `url` varchar(255) NOT NULL, `extra` text NOT NULL, `enabled` tinyint(4) NOT NULL, PRIMARY KEY (`id`)) ENGINE=MyISAM  DEFAULT CHARSET=utf8");
+						$q = $db->query("CREATE TABLE ".$DTP."tweetusers (id SERIAL NOT NULL, userid bigint NOT NULL, screenname varchar(25) NOT NULL, realname varchar(255) NOT NULL, location varchar(255) NOT NULL, description varchar(255) NOT NULL, profileimage varchar(255) NOT NULL, url varchar(255) NOT NULL, extra text NOT NULL, enabled smallint NOT NULL, PRIMARY KEY (id))");
 						if(!$q){
 							$e[] = "An error occured while creating table <code>".$DTP."tweetusers</code>: <code>" . $db->error() . "</code>";
 						} else { $log[] = "Successfully created table ".$DTP."tweetusers"; }
 						
 						// Tweet words table
-						$q = $db->query("CREATE TABLE `".$DTP."tweetwords` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `tweetid` int(10) unsigned NOT NULL, `wordid` int(10) unsigned NOT NULL, `frequency` float NOT NULL, PRIMARY KEY (`id`), KEY `tweetwords_tweetid` (`tweetid`), KEY `tweetwords_wordid` (`wordid`), KEY `tweetwords_frequency` (`frequency`)) ENGINE=MyISAM  DEFAULT CHARSET=utf8");
+						$q = $db->query("CREATE TABLE ".$DTP."tweetwords (id SERIAL NOT NULL, tweetid integer NOT NULL, wordid integer NOT NULL, frequency float NOT NULL, PRIMARY KEY (id))");
 						if(!$q){
 							$e[] = "An error occured while creating table <code>".$DTP."tweetwords</code>: <code>" . $db->error() . "</code>";
 						} else { $log[] = "Successfully created table ".$DTP."tweetwords"; }
 						
 						// Words table
-						$q = $db->query("CREATE TABLE `".$DTP."words` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `word` varchar(150) NOT NULL, `tweets` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `words_tweets` (`tweets`)) ENGINE=MyISAM  DEFAULT CHARSET=utf8");
+						$q = $db->query("CREATE TABLE ".$DTP."words (id SERIAL NOT NULL, word varchar(150) NOT NULL, tweets integer NOT NULL, PRIMARY KEY (id))");
 						if(!$q){
 							$e[] = "An error occured while creating table <code>".$DTP."words</code>: <code>" . $db->error() . "</code>";
 						} else { $log[] = "Successfully created table ".$DTP."words"; }

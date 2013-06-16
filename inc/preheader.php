@@ -51,7 +51,8 @@
 	$jQueryVersion     = "1.5.1";
 	
 	// Getting database time offset
-	$dbtQ = $db->query("SELECT TIMESTAMPDIFF(SECOND, UTC_TIMESTAMP(), NOW()) AS `diff`");
+	//$dbtQ = $db->query("SELECT TIMESTAMPDIFF(SECOND, UTC_TIMESTAMP(), NOW()) AS diff");
+    $dbtQ = $db->query("SELECT EXTRACT(timezone FROM current_time) AS diff");
 	$dbtR = $db->fetch($dbtQ);
 	
 	$dbOffset          = date("Z") - $dbtR['diff'];
@@ -83,11 +84,11 @@
 	}
 	
 	// Author info
-	$authorQ     = $db->query("SELECT * FROM `".DTP."tweetusers` WHERE `screenname` = '" . $db->s($config['twitter_screenname']) . "' LIMIT 1");
+	$authorQ     = $db->query("SELECT * FROM ".DTP."tweetusers WHERE screenname = '" . $db->s($config['twitter_screenname']) . "' LIMIT 1");
 	$author      = $db->fetch($authorQ);
 	$authorextra = unserialize($author['extra']);
 	global $author, $authorextra;
-	
+
 	function getURL($url, $auth = NULL){
 		// HTTP grabbin' cURL options, also exsecror
 		$httpOptions = array(
