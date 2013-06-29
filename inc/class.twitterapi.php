@@ -53,7 +53,7 @@
 			if($format == "json"){
 				// Prevent issues with long ints on 32-bit systems
 				$file = preg_replace("/\"([a-z_]+_)?id\":(\d+)(,|\}|\])/", "\"$1id\":\"$2\"$3", $file);
-				$data = json_decode($file);
+				$data = json_decode($file, true);
 				if(!empty($data->error)){ die($data->error); }
 				return $data;
 			}
